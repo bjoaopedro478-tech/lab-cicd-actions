@@ -3,57 +3,391 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu site - Versão 3 — corrigida</title>
+  <meta name="theme-color" content="#f2f0e9">
+  <title>Eleição dos EUA 2024 | Resultado final</title>
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap");
+
+    :root {
+      color-scheme: light;
+      --paper: #f2f0e9;
+      --ink: #1c2429;
+      --muted: #647077;
+      --line: #c9c9c1;
+      --red: #bd413b;
+      --blue: #315d8a;
+      --green: #376d57;
+      --serif: "Newsreader", Georgia, serif;
+      --sans: "DM Sans", "Trebuchet MS", sans-serif;
+      --mono: "DM Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      min-height: 100vh;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(28, 36, 41, .035) 40px);
+      font-family: var(--sans);
+    }
+
+    button, input, select { font: inherit; }
+    a { color: inherit; }
+
+    .page { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+
+    .masthead {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--ink);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+    .brand-mark { width: 19px; height: 19px; display: grid; place-items: center; color: var(--paper); background: var(--ink); font-size: 10px; }
+    .data-status { display: flex; align-items: center; gap: 8px; color: var(--muted); text-transform: none; letter-spacing: 0; }
+    .status-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: #c38b37; }
+    .data-status.is-ready .status-dot { background: var(--green); }
+    .data-status.is-error .status-dot { background: var(--red); }
+
+    .hero {
       display: grid;
-      place-items: center;
-      font-family: system-ui, "Segoe UI", Roboto, sans-serif;
-      background: #1e9e5a;
-      padding: 1rem;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, .75fr);
+      align-items: end;
+      gap: 44px;
+      padding: 68px 0 48px;
+      border-bottom: 1px solid var(--ink);
     }
-    .cartao {
-      background: #fff;
-      border-radius: 20px;
-      padding: 2.5rem;
-      max-width: 520px;
-      width: 100%;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
-      text-align: center;
-      color: #1d1d1f;
+
+    .eyebrow, .section-kicker, .electoral-label {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.5;
+      letter-spacing: .06em;
+      text-transform: uppercase;
     }
-    .emoji { font-size: 4rem; }
-    h1 { margin: .5rem 0; color: #1e9e5a; }
-    .versao {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      border-radius: 12px;
-      background: #f2f2f7;
-      text-align: left;
-      line-height: 1.8;
+
+    h1 {
+      margin: 15px 0 7px;
+      font-family: var(--serif);
+      font-size: clamp(52px, 8vw, 94px);
+      font-weight: 500;
+      line-height: .96;
     }
-    code { background: #e5e5ea; padding: 2px 6px; border-radius: 6px; }
-    footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e5ea; color: #6e6e73; font-size: .85rem; }
+
+    .winner-caption { margin: 13px 0 0; color: var(--muted); font-size: 16px; }
+    .winner-caption strong { color: var(--ink); font-weight: 600; }
+
+    .electoral { padding: 0 0 4px; }
+    .score { display: flex; align-items: baseline; gap: 12px; margin: 14px 0 9px; font-family: var(--mono); }
+    .score strong { font-size: 58px; font-weight: 500; line-height: 1; }
+    .score strong:first-child { color: var(--red); }
+    .score strong:last-child { color: var(--blue); }
+    .score span { color: var(--muted); font-size: 21px; }
+    .score-labels { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; }
+    .score-labels span:first-child { color: var(--red); }
+    .score-labels span:last-child { color: var(--blue); text-align: right; }
+    .score-track { display: flex; height: 7px; margin-top: 14px; background: #d7d7d0; }
+    .score-track span:first-child { width: 57.99%; background: var(--red); }
+    .score-track span:last-child { flex: 1; background: var(--blue); }
+    .threshold { margin: 7px 0 0; color: var(--muted); font: 10px var(--mono); text-align: right; }
+
+    .results { padding: 42px 0 54px; }
+    .results-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+    .section-kicker { color: var(--muted); }
+    h2 { margin: 7px 0 0; font-family: var(--serif); font-size: 39px; font-weight: 500; line-height: 1.1; }
+
+    .state-totals { display: flex; gap: 24px; padding-bottom: 3px; font-family: var(--mono); font-size: 12px; }
+    .state-totals span { display: inline-flex; align-items: center; gap: 7px; }
+    .state-totals b { font-size: 17px; font-weight: 500; }
+    .state-totals .trump { color: var(--red); }
+    .state-totals .harris { color: var(--blue); }
+
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .controls input, .controls select, .controls button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .36);
+    }
+    .controls input { width: min(260px, 100%); padding: 0 12px; }
+    .controls select { padding: 0 30px 0 10px; }
+    .controls button { padding: 0 13px; border-color: var(--ink); cursor: pointer; }
+    .controls button:hover { color: var(--paper); background: var(--ink); }
+    .controls button:disabled { opacity: .55; cursor: wait; }
+    :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+
+    .table-scroll { overflow-x: auto; border-top: 1px solid var(--ink); }
+    table { width: 100%; min-width: 720px; border-collapse: collapse; text-align: left; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); }
+    thead th { padding-top: 11px; padding-bottom: 11px; color: var(--muted); font: 10px var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+    tbody th { font-weight: 500; }
+    tbody tr:hover { background: rgba(255, 255, 255, .45); }
+    .state-code { display: inline-grid; width: 31px; height: 25px; margin-right: 10px; place-items: center; color: var(--muted); background: rgba(28, 36, 41, .07); font: 10px var(--mono); }
+    .leader { font-size: 12px; font-weight: 700; }
+    .leader.trump { color: var(--red); }
+    .leader.harris { color: var(--blue); }
+    .vote-count { display: block; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .vote-share { display: block; margin-top: 3px; color: var(--muted); font: 10px var(--mono); }
+    .margin { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .empty-state { padding: 30px 10px; color: var(--muted); text-align: center; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px 0 28px;
+      border-top: 1px solid var(--ink);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.7;
+    }
+    footer p { margin: 0; }
+    footer a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+    @media (max-width: 700px) {
+      .page { width: min(100% - 32px, 560px); }
+      .masthead { min-height: 58px; font-size: 10px; }
+      .hero { grid-template-columns: 1fr; gap: 28px; padding: 49px 0 35px; }
+      h1 { font-size: clamp(54px, 16vw, 78px); }
+      .score strong { font-size: 50px; }
+      .results { padding-top: 32px; }
+      .results-heading { align-items: start; flex-direction: column; gap: 16px; }
+      h2 { font-size: 34px; }
+      .state-totals { gap: 18px; }
+      .controls input { flex: 1 1 180px; }
+      footer { flex-direction: column; gap: 8px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero > *, .results-heading { animation: arrive .55s both; }
+      .hero > :last-child { animation-delay: .1s; }
+      @keyframes arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    }
   </style>
 </head>
 <body>
-  <main class="cartao">
-    <div class="emoji">✅</div>
-    <h1>Versão 3 — corrigida</h1>
-    <p>O erro foi corrigido e o robô publicou de novo.</p>
+  <div class="page">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">24</span><span>Eleição dos EUA</span></div>
+      <div id="data-status" class="data-status" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span><span>Carregando resultados</span></div>
+    </header>
 
-    <div class="versao">
-      🤖 <strong>Publicado pelo robô em:</strong> __DATA__<br>
-      🔖 <strong>Commit:</strong> <code>__COMMIT__</code><br>
-      👤 <strong>Enviado por:</strong> __AUTOR__
-    </div>
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Resultado final · 5 de novembro de 2024</p>
+          <h1 id="page-title">Donald<br>Trump</h1>
+          <p class="winner-caption"><strong>Eleito presidente dos Estados Unidos</strong><br>Partido Republicano</p>
+        </div>
+        <div class="electoral" aria-label="Colégio Eleitoral: Donald Trump 312, Kamala Harris 226, de 538 votos">
+          <p class="electoral-label">Colégio Eleitoral · 538 votos</p>
+          <div class="score"><strong>312</strong><span>—</span><strong>226</strong></div>
+          <div class="score-labels"><span>Donald Trump · Republicano</span><span>Kamala Harris · Democrata</span></div>
+          <div class="score-track" aria-hidden="true"><span></span><span></span></div>
+          <p class="threshold">270 para vencer</p>
+        </div>
+      </section>
+
+      <section class="results" aria-labelledby="states-title">
+        <div class="results-heading">
+          <div>
+            <p class="section-kicker">Votação popular · 50 estados</p>
+            <h2 id="states-title">Resultado por estado</h2>
+          </div>
+          <div class="state-totals" aria-live="polite">
+            <span class="trump"><b id="trump-states">—</b> Trump</span>
+            <span class="harris"><b id="harris-states">—</b> Harris</span>
+          </div>
+        </div>
+
+        <div class="controls" aria-label="Filtros dos resultados">
+          <input id="state-search" type="search" placeholder="Buscar estado" aria-label="Buscar por estado ou sigla">
+          <select id="winner-filter" aria-label="Filtrar por candidato líder">
+            <option value="all">Todos os estados</option>
+            <option value="Trump">Liderados por Trump</option>
+            <option value="Harris">Liderados por Harris</option>
+          </select>
+          <button id="refresh" type="button">Atualizar resultados</button>
+        </div>
+
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th scope="col">Estado</th><th scope="col">Mais votado</th><th scope="col">Trump</th><th scope="col">Harris</th><th scope="col">Margem</th></tr>
+            </thead>
+            <tbody id="state-results"><tr><td class="empty-state" colspan="5">Carregando dados públicos…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
 
     <footer>
-      🎓 UNINOVE · Automação de Processos · DevOps<br>
-      Prof. Marcelino Dias da Silva
+      <p>Fonte dos resultados estaduais: <a href="https://github.com/jaytimm/PresElectionResults" target="_blank" rel="noreferrer">PresElectionResults</a>, via <a href="https://raw.githubusercontent.com/jaytimm/PresElectionResults/master/data-raw/2024%20Pres%20by%20CD%20-%20Main.csv" target="_blank" rel="noreferrer">CSV público</a>. Votos por distrito agregados por estado; D.C. não incluído.</p>
+      <p>Colégio Eleitoral: <a href="https://www.britannica.com/event/United-States-presidential-election-of-2024" target="_blank" rel="noreferrer">Britannica</a>.</p>
     </footer>
-  </main>
+  </div>
+
+  <script>
+    const CSV_URL = "https://raw.githubusercontent.com/jaytimm/PresElectionResults/master/data-raw/2024%20Pres%20by%20CD%20-%20Main.csv";
+    const stateNames = {
+      AL: "Alabama", AK: "Alasca", AZ: "Arizona", AR: "Arkansas", CA: "Califórnia",
+      CO: "Colorado", CT: "Connecticut", DE: "Delaware", FL: "Flórida", GA: "Geórgia",
+      HI: "Havaí", ID: "Idaho", IL: "Illinois", IN: "Indiana", IA: "Iowa", KS: "Kansas",
+      KY: "Kentucky", LA: "Luisiana", ME: "Maine", MD: "Maryland", MA: "Massachusetts",
+      MI: "Michigan", MN: "Minnesota", MS: "Mississippi", MO: "Missouri", MT: "Montana",
+      NE: "Nebraska", NV: "Nevada", NH: "Nova Hampshire", NJ: "Nova Jersey", NM: "Novo México",
+      NY: "Nova York", NC: "Carolina do Norte", ND: "Dakota do Norte", OH: "Ohio", OK: "Oklahoma",
+      OR: "Oregon", PA: "Pensilvânia", RI: "Rhode Island", SC: "Carolina do Sul", SD: "Dakota do Sul",
+      TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont", VA: "Virgínia", WA: "Washington",
+      WV: "Virgínia Ocidental", WI: "Wisconsin", WY: "Wyoming"
+    };
+    const numberFormat = new Intl.NumberFormat("pt-BR");
+    const percentFormat = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 });
+    const tableBody = document.querySelector("#state-results");
+    const status = document.querySelector("#data-status");
+    const refreshButton = document.querySelector("#refresh");
+    let results = [];
+
+    function parseCsvLine(line) {
+      const fields = [];
+      let field = "";
+      let quoted = false;
+
+      for (let index = 0; index < line.length; index += 1) {
+        const character = line[index];
+        if (character === '"' && quoted && line[index + 1] === '"') {
+          field += '"';
+          index += 1;
+        } else if (character === '"') {
+          quoted = !quoted;
+        } else if (character === "," && !quoted) {
+          fields.push(field);
+          field = "";
+        } else {
+          field += character;
+        }
+      }
+
+      fields.push(field);
+      return fields;
+    }
+
+    function parseCsv(text) {
+      const [headerLine, ...lines] = text.trim().split(/\r?\n/);
+      const headers = parseCsvLine(headerLine);
+      return lines.map((line) => Object.fromEntries(parseCsvLine(line).map((value, index) => [headers[index], value])));
+    }
+
+    function addCell(row, value, className) {
+      const cell = document.createElement("td");
+      if (className) cell.className = className;
+      cell.textContent = value;
+      row.append(cell);
+      return cell;
+    }
+
+    function renderResults() {
+      const query = document.querySelector("#state-search").value.trim().toLocaleLowerCase("pt-BR");
+      const winnerFilter = document.querySelector("#winner-filter").value;
+      const visibleResults = results.filter((result) => {
+        const matchesSearch = `${result.name} ${result.code}`.toLocaleLowerCase("pt-BR").includes(query);
+        return matchesSearch && (winnerFilter === "all" || result.winner === winnerFilter);
+      });
+
+      if (visibleResults.length === 0) {
+        tableBody.innerHTML = '<tr><td class="empty-state" colspan="5">Nenhum estado encontrado.</td></tr>';
+        return;
+      }
+
+      const rows = visibleResults.map((result) => {
+        const row = document.createElement("tr");
+        const stateCell = document.createElement("th");
+        const code = document.createElement("span");
+        code.className = "state-code";
+        code.textContent = result.code;
+        stateCell.scope = "row";
+        stateCell.append(code, document.createTextNode(result.name));
+        row.append(stateCell);
+
+        addCell(row, result.winner, `leader ${result.winner.toLowerCase()}`);
+        addCell(row, `${numberFormat.format(result.trumpVotes)} · ${percentFormat.format(result.trumpShare)}%`, "vote-count");
+        addCell(row, `${numberFormat.format(result.harrisVotes)} · ${percentFormat.format(result.harrisShare)}%`, "vote-count");
+        addCell(row, `${percentFormat.format(result.margin)} p.p.`, "margin");
+        return row;
+      });
+
+      tableBody.replaceChildren(...rows);
+    }
+
+    async function loadResults() {
+      refreshButton.disabled = true;
+      status.className = "data-status";
+      status.lastElementChild.textContent = "Carregando resultados";
+      tableBody.innerHTML = '<tr><td class="empty-state" colspan="5">Carregando dados públicos…</td></tr>';
+
+      try {
+        const response = await fetch(CSV_URL, { cache: "no-cache" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const rows = parseCsv(await response.text());
+        const totals = new Map();
+        for (const row of rows) {
+          const code = row.CD.split("-")[0];
+          if (!stateNames[code]) continue;
+          const state = totals.get(code) || { trumpVotes: 0, harrisVotes: 0, totalVotes: 0 };
+          state.trumpVotes += Number(row.Trump.replaceAll(",", ""));
+          state.harrisVotes += Number(row.Harris.replaceAll(",", ""));
+          state.totalVotes += Number(row.Total.replaceAll(",", ""));
+          totals.set(code, state);
+        }
+
+        if (totals.size !== 50 || [...totals.values()].some((state) => !state.totalVotes)) {
+          throw new Error("Cobertura estadual incompleta");
+        }
+
+        results = [...totals.entries()].map(([code, state]) => {
+          const trumpShare = state.trumpVotes / state.totalVotes * 100;
+          const harrisShare = state.harrisVotes / state.totalVotes * 100;
+          return {
+            code,
+            name: stateNames[code],
+            trumpVotes: state.trumpVotes,
+            harrisVotes: state.harrisVotes,
+            trumpShare,
+            harrisShare,
+            winner: state.trumpVotes > state.harrisVotes ? "Trump" : "Harris",
+            margin: Math.abs(state.trumpVotes - state.harrisVotes) / state.totalVotes * 100
+          };
+        }).sort((left, right) => left.name.localeCompare(right.name, "pt-BR"));
+
+        document.querySelector("#trump-states").textContent = results.filter((result) => result.winner === "Trump").length;
+        document.querySelector("#harris-states").textContent = results.filter((result) => result.winner === "Harris").length;
+        status.className = "data-status is-ready";
+        status.lastElementChild.textContent = "Resultados atualizados";
+        renderResults();
+      } catch {
+        status.className = "data-status is-error";
+        status.lastElementChild.textContent = "Não foi possível carregar os dados";
+        tableBody.innerHTML = '<tr><td class="empty-state" colspan="5">Falha ao consultar a fonte pública. Tente atualizar novamente.</td></tr>';
+      } finally {
+        refreshButton.disabled = false;
+      }
+    }
+
+    document.querySelector("#state-search").addEventListener("input", renderResults);
+    document.querySelector("#winner-filter").addEventListener("change", renderResults);
+    refreshButton.addEventListener("click", loadResults);
+    loadResults();
+  </script>
 </body>
 </html>
